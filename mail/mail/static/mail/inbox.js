@@ -9,20 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // By default, load the inbox
   load_mailbox('inbox');
 
-  fetch('/emails/inbox')
-  .then(response => response.json())
-  .then(emails => {
-      // Print emails
-      if (emails.length <= 0) {
-        console.log('No emails yet.');
-      } else {
-        console.log(emails);
-      }
-    
-  
-      // ... do something else with emails ...
-  })
-  .catch(error => console.error(error));
+
 
 });
 
@@ -49,4 +36,45 @@ function load_mailbox(mailbox) {
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+
+  if (mailbox === 'inbox'){
+    inbox();
+  } else if (mailbox === 'sent'){
+    // to do
+  } else {
+    // to do
+  }
+
+}
+
+function inbox() {
+
+  fetch('/emails/inbox')
+  .then(response => response.json())
+  .then(emails => {
+    
+    const emailsView = document.querySelector('#emails-view');  
+
+
+    // if there are no inbox yet
+    if (emails.length <= 0) {
+      emailsView.innerHTML = '<h5>No messages yet.</h5>';
+    } 
+
+    // show all email
+    emails.forEach(email => {
+
+      const div = document.createElement('div');
+
+      div.innerHTML = `<h6>${email.sender}</h6><p>${email.subject}</p><p>${email.timestamp}</p>`;
+      
+      div.style.display = "flex";
+      div.style.flexWrap = "wrap";
+      div.style.justifyContent = "space-between";
+
+      emailsView.appendChild(div);
+    });
+
+  })
+  .catch(error => console.error(`Error: ${error}`));
 }
