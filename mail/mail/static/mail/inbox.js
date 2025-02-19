@@ -91,14 +91,14 @@ function inbox() {
 }
 
 
-function sendMail (recipients_, subject_, body_) {
+function sendMail (toRecipients, toSubject, toBody) {
     
   fetch('/emails', {
     method: 'POST',
     body: JSON.stringify({
-        recipients: `${recipients_}`,
-        subject: `${subject_}`,
-        body: `${body_}`
+        recipients: `${toRecipients}`,
+        subject: `${toSubject}`,
+        body: `${toBody}`
     })
   })
   .then(response => response.json())
