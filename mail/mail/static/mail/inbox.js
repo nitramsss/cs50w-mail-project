@@ -8,12 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // By default, load the inbox
   load_mailbox('inbox');
-
-
-
 });
-
-
 
 
 function compose_email() {
@@ -22,11 +17,28 @@ function compose_email() {
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
 
+  
+  document.querySelector('#compose-form').addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    // Get the recipients value, subject value, and body value
+    const recipients = document.querySelector('#compose-recipients').value;
+    const subject = document.querySelector('#compose-subject').value;
+    const body = document.querySelector('#compose-body').value;
+
+    // Pass to sendMail function
+    sendMail(recipients, subject, body);
+    
+  });
+
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
+
+  
 }
+
 
 function load_mailbox(mailbox) {
   
@@ -55,7 +67,6 @@ function inbox() {
     
     const emailsView = document.querySelector('#emails-view');  
 
-
     // if there are no inbox yet
     if (emails.length <= 0) {
       emailsView.innerHTML = '<h5>No messages yet.</h5>';
@@ -77,4 +88,22 @@ function inbox() {
 
   })
   .catch(error => console.error(`Error: ${error}`));
+}
+
+
+function sendMail (recipients_, subject_, body_) {
+    
+  fetch('/emails', {
+    method: 'POST',
+    body: JSON.stringify({
+        recipients: `${recipients_}`,
+        subject: `${subject_}`,
+        body: `${body_}`
+    })
+  })
+  .then(response => response.json())
+  .then(result => {
+    // Print result
+    console.log(result);
+  }); 
 }
