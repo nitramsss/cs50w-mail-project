@@ -78,11 +78,17 @@ function mailBox(event) {
 
       const div = document.createElement('div');
 
+      div.addEventListener('click', () => {
+        // show div content 
+        showEmail(email.id);
+
+      });
+
       if (email.read) {
         div.style.backgroundColor = 'white';
       } else {
         div.style.backgroundColor = 'gray';
-      }
+      }      
 
       div.style.padding = '10px';
       div.style.borderRadius = '5px';
@@ -94,15 +100,6 @@ function mailBox(event) {
       div.style.display = "flex";
       div.style.flexWrap = "wrap";
       div.style.justifyContent = "space-between";
-
-      div.addEventListener('click', () => {
-        // show div content 
-        showEmail(email.id);
-
-        // make div.read = True
-        // email.read = 'True';
-
-      });
 
       emailsView.appendChild(div);
     });
@@ -159,7 +156,11 @@ function showEmail(id) {
 
       toUser.style.border = '1px solid black';
       toUser.style.borderRadius = '5px';
-      toUser.style.padding = '20px';
+      toUser.style.paddingLeft = '10px';
+      toUser.style.paddingTop = '20px';
+      toUser.style.paddingRight = '10px';
+      toUser.style.paddingBottom = '5px';
+
       toUser.style.display = 'flex';
       toUser.style.flexWrap = 'wrap';
       toUser.style.flexDirection = 'column';
@@ -182,7 +183,7 @@ function showEmail(id) {
       // inserting contents
       fromUser.innerHTML = `${email.sender}`;
 
-      const recipients = ["safdsadf", "sdfsafa", "adfasd"];
+      const recipients = email.recipients;
       recipients.forEach(recipient => {
 
         const par = document.createElement('p');
@@ -194,5 +195,38 @@ function showEmail(id) {
       emailSubject.innerHTML = `${email.subject}`;
       emailBody.innerHTML = `${email.body}`;
 
+      // if (email.sender !== )
+      const button = document.createElement('button');
+      const divTarget = document.querySelector('#inbox-button');
+
+      // to do
+      
+      
+
+
   });
+
+  fetch(`/emails/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+        read: true
+    })
+  })
+}
+
+
+function archiveUnarchive(emailId, event) {
+
+
+
+
+  fetch(`/emails/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+        read: true
+    })
+  })
+  // if archive make the button unarchive 
+  // else make the button archive
+
 }
