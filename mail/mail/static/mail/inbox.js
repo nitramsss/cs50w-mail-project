@@ -72,42 +72,42 @@ function mailBox(event) {
     // if there are no inbox yet
     if (emails.length <= 0) {
       emailsView.innerHTML = '<h5>Empty</h5>';
-    } 
+    } else {
+      // show all email
+      emails.forEach(email => {
+        const div = document.createElement('div');
 
-    // show all email
-    emails.forEach(email => {
-      const div = document.createElement('div');
+        div.addEventListener('click', () => {
+          // show div content 
+          showEmail(email.id);
 
-      div.addEventListener('click', () => {
-        // show div content 
-        showEmail(email.id);
+        });
 
+        if (email.read) {
+          div.style.backgroundColor = 'white';
+        } else {
+          div.style.backgroundColor = 'gray';
+        }      
+        
+        // style the div
+        div.style.padding = '10px';
+        div.style.borderRadius = '5px';
+        div.style.border = '1px solid black';
+        div.style.marginBottom = '3px';
+
+        // Show the sender, subject, and time in div
+        div.innerHTML = `<h6>${email.sender}</h6><p>${email.subject}</p><p>${email.timestamp}</p>`;
+        
+        // Make it responsive
+        div.style.display = "flex";
+        div.style.flexWrap = "wrap";
+        div.style.justifyContent = "space-between";
+
+        // Append to html div
+        emailsView.appendChild(div);
+        
       });
-
-      if (email.read) {
-        div.style.backgroundColor = 'white';
-      } else {
-        div.style.backgroundColor = 'gray';
-      }      
-      
-      // style the div
-      div.style.padding = '10px';
-      div.style.borderRadius = '5px';
-      div.style.border = '1px solid black';
-      div.style.marginBottom = '3px';
-
-      // Show the sender, subject, and time in div
-      div.innerHTML = `<h6>${email.sender}</h6><p>${email.subject}</p><p>${email.timestamp}</p>`;
-      
-      // Make it responsive
-      div.style.display = "flex";
-      div.style.flexWrap = "wrap";
-      div.style.justifyContent = "space-between";
-
-      // Append to html div
-      emailsView.appendChild(div);
-      
-    });
+      }
 
   })
   .catch(error => console.error(`Error: ${error}`));
@@ -140,9 +140,6 @@ function showEmail(id) {
   fetch(`/emails/${id}`)
   .then(response => response.json())
   .then(email => {
-      // Print email
-      // console.log(email);
-
       // Get all div to be used
       const fromUser = document.querySelector('#from-user');
       const toUser = document.querySelector('#to-user');
@@ -207,54 +204,95 @@ function showEmail(id) {
 
       // Archive and unarchive button
       const currentUser = document.querySelector('[data-current-user]');
-
-      console.log(currentUser.dataset.currentUser)
+      
       if (email.sender !== currentUser.dataset.currentUser) {
-        const button = document.createElement('button');
-        const divTarget = document.querySelector('#inbox-button');
 
+        const inboxButton = document.querySelector('#inbox-button');
+        // inboxButton.innerHTML = '';
+        
+        const archiveButton = document.createElement('button');
+        const divTarget = document.querySelector('#archive-button');
+
+        const targetDiv = document.querySelector('#reply-button');
+        const replyButton = document.createElement('button');
+
+        targetDiv.innerHTML = '';
         divTarget.innerHTML = '';
 
-        button.style.borderRadius = '5px';
-        button.style.backgroundClip = 'white';
+        // Archive button
+        archiveButton.style.borderRadius = '5px';
+        archiveButton.style.backgroundClip = 'white';
 
-        
-        if (email.archive) {
-          button.innerHTML = "Unarchive";
+        // Reply button
+        replyButton.style.borderRadius = '5px';
+        replyButton.style.backgroundClip = 'white';
+
+        replyButton.innerHTML = 'Reply'
+
+        targetDiv.appendChild(replyButton);
+      
+        replyButton.addEventListener('click', () => {
+          console.log("i'm clicked");
+          compose_email();
+        });
+
+        // Archive innerHTML condition 
+        if (email.archived) {
+          archiveButton.innerHTML = "Unarchive";
         } else {
-          button.innerHTML = "Archive";
+          archiveButton.innerHTML = "Archive";
         }
 
-        divTarget.appendChild(button);
+        divTarget.appendChild(archiveButton);
 
-        button.addEventListener('click', () => {
-
-          if (email.archive) {
-            console.log(email.archive)
+        archiveButton.addEventListener('click', () => {
+          if (email.archived) {
             archiveUnarchive(email.id, 'false');
           } else {
-            console.log(email.archive)
             archiveUnarchive(email.id, 'true');
+            load_mailbox('inbox');
           }
-        })
-      }
 
+          load_mailbox('inbox');
+        });
+
+      } else {
+        const replyButton = document.querySelector('#reply-button');
+        const archiveButton = document.querySelector('#archive-button');
+
+        replyButton.innerHTML = '';
+        archiveButton.innerHTML = '';      
+      }
   });
 
+  // Mark as read after being clicked 
   fetch(`/emails/${id}`, {
     method: 'PUT',
     body: JSON.stringify({
         read: true
     })
-  })
+  });
 }
 
-
+// Mark as archive or unarchive
 function archiveUnarchive(emailId, event) {
+  let value = true
+  if (event === 'false') {
+    value = false;
+  }
+
   fetch(`/emails/${emailId}`, {
     method: 'PUT',
     body: JSON.stringify({
-      archive: Boolean(`${event}`)
+      archived: value
     })
-  })
+  });
 }
+
+
+// Replying to email
+function reply() {
+
+}
+
+
