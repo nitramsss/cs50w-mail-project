@@ -265,10 +265,7 @@ function showEmail(id) {
             archiveUnarchive(email.id, 'false');
           } else {
             archiveUnarchive(email.id, 'true');
-            load_mailbox('inbox');
           }
-
-          load_mailbox('inbox');
         });
 
       } else {
@@ -295,13 +292,12 @@ function archiveUnarchive(emailId, event) {
   if (event === 'false') {
     value = false;
   }
-
   fetch(`/emails/${emailId}`, {
     method: 'PUT',
     body: JSON.stringify({
       archived: value
     })
   });
+
+  location.reload();
 }
-
-
